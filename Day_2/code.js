@@ -1,5 +1,4 @@
 const fs = require("fs");
-const internal = require("stream");
 
 const fsConfig = {encoding:"utf8",flag:"r"};
 
