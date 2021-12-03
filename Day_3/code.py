@@ -10,7 +10,7 @@ def GetDenary(binArr):
         num += binArr[i] * 2 ** p
     return num
 
-def GetPowerConsumption(report):
+def GetMostCommonBits(report):
     bitCount = [0,0,0,0,0,0,0,0,0,0,0,0]
     for i in range(len(report)):
         line = report[i]
@@ -18,21 +18,31 @@ def GetPowerConsumption(report):
             bit = line[j]
             if bit == '1':
                 bitCount[j] += 1
-
+    
     mostCommonBits = []
-    leastCommonBits = []
     for i in range(len(bitCount)):
         if (bitCount[i] >= 500):
             mostCommonBits.append(1)
-            leastCommonBits.append(0)
         else:
             mostCommonBits.append(0)
-            leastCommonBits.append(1)
+    return mostCommonBits
+
+def FlipBits(binArr):
+    newBinArr = []
+    for i in range(len(binArr)):
+        if binArr[i] == 0:
+            newBinArr.append(1)
+        else:
+            newBinArr.append(0)
+    return newBinArr
+
+def GetPowerConsumption(report):
+    mostCommonBits = GetMostCommonBits(report)
+    leastCommonBits = FlipBits(mostCommonBits)
     
     gamma = GetDenary(mostCommonBits)
     epsilon = GetDenary(leastCommonBits)
 
-    return gamma * epsilon    
-
+    return gamma * epsilon
 
 print("Power consumption is", GetPowerConsumption(GetReport()))
