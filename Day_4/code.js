@@ -7,6 +7,7 @@ class Board
     constructor(arr)
     {
         this.cells = [];
+        this.hasWon = false;
         for(let i in arr)
         {
             let line = arr[i];
@@ -16,8 +17,6 @@ class Board
             line = line.replace(/ {2}/g, " ").trimStart();
 
             let numStrs = line.split(" ");
-            //console.log(`numStrs: ${numStrs}`);
-
             for(let j in numStrs)
             {
                 let obj = {num: numStrs[j], marked: false};
@@ -26,10 +25,7 @@ class Board
                 {
                     console.log(`5 detected, numStrs: ${numStrs};`);
                 }
-                //console.log(`j: ${j}`);
             }
-
-            //console.log(`lineCells: ${lineCells}`);
             this.cells.push(lineCells);
         }
     }
@@ -45,6 +41,7 @@ class Board
                     this.cells[y][x].marked = true;
                     if (this.CheckRowAndColumn(x,y))
                     {
+                        this.hasWon = true;
                         return true;
                     }
                     break;
@@ -60,7 +57,6 @@ class Board
         let columnBroken = false;
         for (let i = 0; i < 5 && !(rowBroken && columnBroken); i++)
         {
-            console.log(`Checking (${y}, ${i}) and (${i}, ${x}).`);
             if (!this.cells[y][i].marked)
             {
                 columnBroken = true;
@@ -87,6 +83,33 @@ class Board
         }
         return sum;
     }
+    Reset()
+    {
+        this.hasWon = false;
+        for (let y in this.cells)
+        {
+            for (let x in this.cells[y])
+            {
+                this.cells[y][x].marked = false;
+            }
+        }
+    }
+}
+
+class Config
+{
+    constructor(drawn, bingoBoards)
+    {
+        this.drawn = drawn;
+        this.bingoBoards = bingoBoards;
+    }
+    Reset()
+    {
+        for (let i in this.bingoBoards)
+        {
+            this.bingoBoards[i].Reset();
+        }
+    }
 }
 
 function GetConfig()
@@ -108,7 +131,7 @@ function GetConfig()
         boards.push(new Board(boardArr));
     }
 
-    return {drawn: numStrs, bingoBoards: boards};
+    return new Config(numStrs, boards);
 }
 
 function GetWinningBoardAndNumber(config)
@@ -123,7 +146,36 @@ function GetWinningBoardAndNumber(config)
             }
         }
     }
-    return -1;
+    return null;
+}
+
+function GetLastWinnerAndNumber(config)
+{
+    let winners = 0;
+    for (let i in config.drawn)
+    {
+        for (let j in config.bingoBoards)
+        {
+            if (config.bingoBoards[j].hasWon)
+            {
+                continue;
+            }
+            if (config.bingoBoards[j].CheckNumberForWin(config.drawn[i]))
+            {
+                if (winners >= config.bingoBoards.length-1)
+                {
+                    console.log(`Last winner found.`);
+                    return {board: config.bingoBoards[j], number: config.drawn[i]};
+                }
+                else
+                {
+                    winners++;
+                }
+            }
+        }
+    }
+    console.log(`config.bingoBoards.length: ${config.bingoBoards.length}; winners: ${winners}`);
+    return null;
 }
 
 let boardConfig = GetConfig();
@@ -133,3 +185,12 @@ let unMarkedSum = winner.board.UnMarkedSum();
 let finalScore = unMarkedSum * winner.number;
 
 console.log(`Final score is ${finalScore}`);
+
+boardConfig.Reset();
+
+let lastWinner = GetLastWinnerAndNumber(boardConfig);
+
+let lastUnMarkedSum = lastWinner.board.UnMarkedSum();
+let lastFinalScore = lastUnMarkedSum * lastWinner.number;
+
+console.log(`Last final score is ${lastFinalScore}.`);
