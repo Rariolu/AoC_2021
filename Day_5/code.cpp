@@ -179,58 +179,18 @@ struct Grid
         if (line.IsHorizontal())
         {
             grad.x = mX > 0 ? 1 : -1;
-            // int startX;
-            // int endX;
-            // if (line.start.x < line.end.x)
-            // {
-            //     startX = line.start.x;
-            //     endX = line.end.x;
-            // }
-            // else
-            // {
-            //     startX = line.end.x;
-            //     endX = line.start.x;
-            // }
-            // for(int x = startX; x <= endX; x++)
-            // {
-            //     grid[x][line.start.y]++;
-            // }
         }
         else if (line.IsVertical())
         {
             grad.y = mY > 0 ? 1 : -1;
-            // int startY;
-            // int endY;
-            // if (line.start.y < line.end.y)
-            // {
-            //     startY = line.start.y;
-            //     endY = line.end.y;
-            // }
-            // else
-            // {
-            //     startY = line.end.y;
-            //     endY = line.start.y;
-            // }
-            // for(int y = startY; y <= endY; y++)
-            // {
-            //     grid[line.start.x][y]++;
-            // }
         }
         else if (line.IsDiagonal())
         {
             grad.x = mX > 0 ? 1 : -1;
             grad.y = mY > 0 ? 1 : -1;
-            // int mX = line.end.x - line.start.x;
-            // int gradX = mX > 0 ? 1 : -1;
-
-            // int mY = line.end.y - line.start.y;
-            // int gradY = mY > 0 ? 1 : -1;
-
-
         }
         for (Vec2 i = line.start; i != line.end.Add(grad); i = i.Add(grad))
         {
-            //std::cout << "("<<i.x<<","<<i.y<<std::endl;
             grid[i.x][i.y]++;
         }
     }
@@ -296,8 +256,5 @@ int main()
     std::cout << "Completed diagonals"<<std::endl;
 
     std::cout << "Total overlap using only horizontal and vertical lines is: "<<grid.TotalOverlap()<<std::endl;
-    
-    //grid.PrintGrid();
-    
     return 0;
 }
