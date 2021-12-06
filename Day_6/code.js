@@ -14,29 +14,83 @@ function GetInitialFish()
     return nums;
 }
 
-function ProcessDayIncrement(fish)
+
+//First solution, too brute-force.
+function ProcessDayIncrement(fishArr)
 {
-    newFish = [];
-    for (let i in fish)
+    let newFish = [];
+    for (let i in fishArr)
     {
-        if (fish[i] < 1)
+        if (fishArr[i] < 1)
         {
-            fish[i] = 6;
+            fishArr[i] = 6;
             newFish.push(8);
         }
         else
         {
-            fish[i]--;
+            fishArr[i]--;
         }
     }
-    return fish.concat(newFish);
+    return fishArr.concat(newFish);
 }
 
-const days = 80;
-let fish = GetInitialFish();
-for (let i = 0; i < days; i++)
+//Second solution, less brute-force but still far too inefficient.
+function GetFishDecendents(originalCount, dayCount)
 {
-    fish = ProcessDayIncrement(fish);
+    let firstBirth = dayCount-(originalCount);
+    let fishTotal = 1;
+    for (let i = firstBirth; i > 0; i-=7)
+    {
+        fishTotal += GetFishDecendents(8, i-1);
+    }
+    return fishTotal;
 }
 
-console.log(`The fish population after ${days} days is ${fish.length}.`);
+//Third solution, inspired by a sage called Azrael.
+function AzraelsTheorem(fishes, dayCount)
+{
+    let ages = [0,0,0,0,0,0,0,0,0];
+    for (let i in fishes)
+    {
+        ages[fishes[i]]++;
+    }
+    for (let d = 0; d < dayCount; d++)
+    {
+        let ogZero = ages[0];
+        for (let i = 0; i < 8; i++)
+        {
+            ages[i] = ages[i+1];
+        }
+        ages[6] += ogZero;
+        ages[8] = ogZero;
+    }
+
+    let fishTotal = 0;
+    for (let i in ages)
+    {
+        fishTotal += ages[i];
+    }
+    return fishTotal;
+}
+
+const days = 256;
+let fish = GetInitialFish();
+
+let total = AzraelsTheorem(fish, days);
+
+// let total = 0;
+
+// for (let i in fish)
+// {
+//     console.log(`fish: ${i}; count: ${fish[i]}.`);
+//     total += GetFishDecendents(fish[i], days);
+// }
+
+
+// for (let i = 0; i < days; i++)
+// {
+//     console.log(`day ${i+1}.`);
+//     fish = ProcessDayIncrement(fish);
+// }
+
+console.log(`The fish population after ${days} days is ${total}.`);
